@@ -90,8 +90,8 @@ export class AuthService {
   // ── Private: generate JWT ──────────────────────────
   private generateToken(payload: JwtPayload): string {
     return this.jwt.sign(payload, {
-      secret: this.config.get<string>('JWT_SECRET'),
-      expiresIn: this.config.get<string>('JWT_EXPIRES_IN', '7d'),
+      secret: this.config.get<string>('JWT_SECRET')!,
+      expiresIn: this.config.get('JWT_EXPIRES_IN', '7d'),
     });
   }
 }
