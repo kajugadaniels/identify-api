@@ -1,19 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
-    // ── Environment config ───────────────────────────
-    // isGlobal: true means ConfigService is available in every module
-    // without needing to re-import ConfigModule each time
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
     }),
 
-    // ── Rate limiting ────────────────────────────────
-    // Reads limits from .env — no hardcoded values in code
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => [
@@ -24,7 +20,10 @@ import { ThrottlerModule } from '@nestjs/throttler';
       ],
     }),
 
-    // Auth and Users modules will be imported here in the next steps
+    // ── Prisma (global) ──────────────────────────────
+    // @Global() on PrismaModule means PrismaService is injectable
+    // in AuthModule, UsersModule, VerificationModule — no re-import needed
+    PrismaModule,
   ],
 })
 export class AppModule {}
