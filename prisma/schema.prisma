@@ -3,10 +3,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// In Prisma 7, connection URLs are no longer configured here.
+// They live in prisma.config.ts (project root) — see that file.
 datasource db {
-  provider  = "postgresql"
-  // Reads from .env — never hardcoded here
-  url       = env("DATABASE_URL")
+  provider = "postgresql"
 }
 
 // ── User table ───────────────────────────────────────
