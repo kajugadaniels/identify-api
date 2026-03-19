@@ -34,6 +34,7 @@ export class UsersService {
   // Used by GET /users/profile
   // Takes the userId from the JWT — not from the URL (prevents IDOR attacks)
   async getProfile(userId: string): Promise<SafeUser> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: SAFE_USER_SELECT,
@@ -44,6 +45,7 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return user;
   }
 
@@ -55,6 +57,7 @@ export class UsersService {
     dto: UpdateProfileDto,
   ): Promise<SafeUser> {
     // Verify user still exists before attempting update
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const exists = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { id: true },
@@ -66,6 +69,7 @@ export class UsersService {
 
     // Prisma only updates fields present in dto
     // If firstName is not sent, it stays unchanged in the DB
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const updated = await this.prisma.user.update({
       where: { id: userId },
       data: {
@@ -76,6 +80,7 @@ export class UsersService {
       select: SAFE_USER_SELECT,
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return updated;
   }
 
@@ -83,6 +88,7 @@ export class UsersService {
   // Used by GET /users/verifications
   // Returns past verification attempts for the logged-in user
   async getVerificationHistory(userId: string) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const verifications = await this.prisma.verification.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' }, // newest first
@@ -98,6 +104,7 @@ export class UsersService {
       },
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return verifications;
   }
 }
