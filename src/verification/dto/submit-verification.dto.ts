@@ -1,10 +1,10 @@
-import { IsString, IsNotEmpty, IsUUID } from 'class-validator';
+import { IsString, IsOptional, IsUUID } from 'class-validator';
 
 export class SubmitVerificationDto {
-  // The session ID returned from POST /verify/session
-  // Must be a valid UUID — AWS Rekognition session IDs are always UUIDs
+  // Optional: the liveness session ID created by POST /verify/session.
+  // When omitted, the FastAPI engine bypasses the liveness check.
+  @IsOptional()
   @IsString()
-  @IsNotEmpty({ message: 'Liveness session ID is required' })
   @IsUUID('4', { message: 'Invalid liveness session ID format' })
-  livenessSessionId!: string;
+  livenessSessionId?: string;
 }
