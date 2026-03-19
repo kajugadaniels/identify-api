@@ -1,3 +1,4 @@
+import "dotenv/config"; // must run before defineConfig reads process.env
 import { defineConfig } from "prisma/config";
 
 // Prisma 7: connection URLs live here, not in schema.prisma.
