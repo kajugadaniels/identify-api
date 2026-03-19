@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -19,11 +20,11 @@ import { AuthModule } from './auth/auth.module';
     }),
 
     PrismaModule,
-
-    // ── Feature modules ──────────────────────────────
     AuthModule,
-    // UsersModule  ← next step
-    // VerificationModule ← after that
+
+    // ── Users feature module ─────────────────────────
+    UsersModule,
+    // VerificationModule ← next step after FastAPI engine
   ],
 })
 export class AppModule {}
