@@ -2,13 +2,11 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { PrismaModule } from './prisma/prisma.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: '.env',
-    }),
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
 
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
@@ -20,10 +18,12 @@ import { PrismaModule } from './prisma/prisma.module';
       ],
     }),
 
-    // ── Prisma (global) ──────────────────────────────
-    // @Global() on PrismaModule means PrismaService is injectable
-    // in AuthModule, UsersModule, VerificationModule — no re-import needed
     PrismaModule,
+
+    // ── Feature modules ──────────────────────────────
+    AuthModule,
+    // UsersModule  ← next step
+    // VerificationModule ← after that
   ],
 })
 export class AppModule {}
