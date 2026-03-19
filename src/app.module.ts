@@ -4,6 +4,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { VerificationModule } from './verification/verification.module';
 
 @Module({
   imports: [
@@ -21,10 +22,11 @@ import { UsersModule } from './users/users.module';
 
     PrismaModule,
     AuthModule,
-
-    // ── Users feature module ─────────────────────────
     UsersModule,
-    // VerificationModule ← next step after FastAPI engine
+
+    // ── Verification feature module ──────────────
+    // Handles liveness session creation and full ID verification flow
+    VerificationModule,
   ],
 })
 export class AppModule {}
