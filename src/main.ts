@@ -10,7 +10,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get(ConfigService);
-  const port = configService.get<number>('PORT', 3001);
+  const port = parseInt(process.env.PORT ?? '3001', 10);
 
   // ── Security headers ─────────────────────────────
   app.use(helmet());
