@@ -42,8 +42,8 @@ export class VerificationService {
     // All other Rekognition calls happen inside FastAPI
     this.rekognitionClient = new RekognitionClient({
       credentials: {
-        accessKeyId: this.config.get<string>('AWS_ACCESS_KEY_ID'),
-        secretAccessKey: this.config.get<string>('AWS_SECRET_ACCESS_KEY'),
+        accessKeyId: this.config.get<string>('AWS_ACCESS_KEY_ID')!,
+        secretAccessKey: this.config.get<string>('AWS_SECRET_ACCESS_KEY')!,
       },
       region: this.config.get<string>('AWS_REGION', 'eu-west-1'),
     });
@@ -82,7 +82,7 @@ export class VerificationService {
         `Liveness session created for user ${userId}: ${response.SessionId}`,
       );
 
-      return { sessionId: response.SessionId };
+      return { sessionId: response.SessionId! };
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       this.logger.error(`Failed to create liveness session: ${error.message}`);
