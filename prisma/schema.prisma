@@ -1,0 +1,47 @@
+// Tells Prisma which database engine and how to connect
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  // Reads from .env — never hardcoded here
+  url       = env("DATABASE_URL")
+}
+
+// ── User table ───────────────────────────────────────
+// Stores registered users — passwords are always hashed, never plain text
+model User {
+  id        String   @id @default(uuid())   // UUID primary key
+  email     String   @unique                // unique email per user
+  password  String                          // bcrypt hash only
+  firstName String
+  lastName  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // One user can have many verification attempts
+  verifications Verification[]
+
+  @@map("users") // actual PostgreSQL table name
+}
+
+// ── Verification table ───────────────────────────────
+// Every ID verification attempt is logged here
+// We never store raw images — only the result metadata
+model Verification {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+
+  // Score breakdown — stored separately for transparency
+  livenessScore   Float    // 0–100 from AWS Rekognition Face Liveness
+  faceMatchScore  Float    // 0–100 from AWS Rekognition CompareFaces
+  ocrPassed       Boolean  // did the OCR text extraction succeed
+  compositeScore  Float    // final weighted accuracy score 0–100
+  passed          Boolean  // true if compositeScore >= threshold
+
+  createdAt       DateTime @default(now())
+
+  @@map("verifications")
+}
