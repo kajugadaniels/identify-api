@@ -1,21 +1,19 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
-    // ── Environment config ──────────────────────────
-    // Makes ConfigService available everywhere
-    // isGlobal: true means we don't re-import ConfigModule in every module
+    // ── Environment config ───────────────────────────
+    // isGlobal: true means ConfigService is available in every module
+    // without needing to re-import ConfigModule each time
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
     }),
 
-    // ── Rate limiting ───────────────────────────────
-    // Limits each IP to THROTTLE_LIMIT requests per THROTTLE_TTL seconds
-    // Prevents brute force attacks on auth and verify endpoints
+    // ── Rate limiting ────────────────────────────────
+    // Reads limits from .env — no hardcoded values in code
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => [
@@ -26,19 +24,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
       ],
     }),
 
-    // ── Database ────────────────────────────────────
-    // Connects to Neon PostgreSQL using DATABASE_URL from .env
-    // SSL is required for Neon connections
-    TypeOrmModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        type: 'postgres',
-        url: config.get<string>('DATABASE_URL'),
-        ssl: { rejectUnauthorized: false }, // required for Neon
-        autoLoadEntities: true, // auto-picks up all @Entity() classes
-        synchronize: process.env.NODE_ENV !== 'production', // never true in prod
-      }),
-    }),
+    // Auth and Users modules will be imported here in the next steps
   ],
 })
 export class AppModule {}
