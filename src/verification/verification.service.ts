@@ -97,17 +97,18 @@ export class VerificationService {
   // Sends images to FastAPI, saves result to DB, returns score
   async submitVerification(
     userId: string,
-    livenessSessionId: string,
+    livenessSessionId: string | undefined,
     idImageBuffer: Buffer,
     selfieBuffer: Buffer,
     idImageMimetype: string,
     selfieMimetype: string,
   ) {
     // ── Build multipart form for FastAPI ───────────
-    // FastAPI expects multipart/form-data with both images + session ID
+    // FastAPI expects multipart/form-data with both images.
+    // liveness_session_id is optional — omitting it bypasses the liveness check.
     const form = new FormData();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    form.append('liveness_session_id', livenessSessionId);
+    if (livenessSessionId) form.append('liveness_session_id', livenessSessionId);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     form.append('id_image', idImageBuffer, {
       filename: 'id_image.jpg',
