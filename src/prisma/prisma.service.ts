@@ -1,29 +1,19 @@
-import {
-  Injectable,
-  OnModuleInit,
-  OnModuleDestroy,
-  Logger,
-} from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
+// src/prisma/prisma.service.ts
 
-// Prisma 7 requires a driver adapter — datasourceUrl is no longer accepted.
-// Passing a PoolConfig lets PrismaPg manage the pg.Pool internally, which
-// avoids @types/pg version conflicts between the top-level install and the
-// version bundled inside @prisma/adapter-pg.
-// DATABASE_URL (pooled Neon URL) is used at runtime; DIRECT_URL is CLI-only.
+import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
+
 @Injectable()
-export class PrismaService implements OnModuleInit, OnModuleDestroy {
+export class PrismaService
+  extends PrismaClient
+  implements OnModuleInit, OnModuleDestroy
+{
   private readonly logger = new Logger(PrismaService.name);
-  private readonly prisma: PrismaClient;
 
   constructor() {
-    const adapter = new PrismaPg({
-      connectionString: process.env.DATABASE_URL,
-    });
-
-    this.prisma = new PrismaClient({
-      adapter,
+    super({
+      // Log slow queries and errors in development
+      // In production keep only 'error' to reduce noise
       log:
         process.env.NODE_ENV === 'development'
           ? ['query', 'warn', 'error']
@@ -31,40 +21,16 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
     });
   }
 
-  // ── Model delegates ───────────────────────────────────────────────────────
-  // Expose model accessors so callers use prismaService.user.findMany() etc.
-
-  get user() {
-    return this.prisma.user;
-  }
-
-  get verification() {
-    return this.prisma.verification;
-  }
-
-  // ── Client utilities ──────────────────────────────────────────────────────
-
-  get $transaction() {
-    return this.prisma.$transaction.bind(this.prisma);
-  }
-
-  get $queryRaw() {
-    return this.prisma.$queryRaw.bind(this.prisma);
-  }
-
-  get $executeRaw() {
-    return this.prisma.$executeRaw.bind(this.prisma);
-  }
-
-  // ── Lifecycle ─────────────────────────────────────────────────────────────
-
-  async onModuleInit(): Promise<void> {
-    await this.prisma.$connect();
+  // Connect to DB when the NestJS module initializes
+  async onModuleInit() {
+    await this.$connect();
     this.logger.log('Database connected');
   }
 
-  async onModuleDestroy(): Promise<void> {
-    await this.prisma.$disconnect();
+  // Disconnect cleanly when the app shuts down
+  // Prevents connection leaks during hot-reload in development
+  async onModuleDestroy() {
+    await this.$disconnect();
     this.logger.log('Database disconnected');
   }
 }
