@@ -11,14 +11,17 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     // Register Passport with jwt as the default strategy
     PassportModule.register({ defaultStrategy: 'jwt' }),
 
-    // Register JWT — reads secret and expiry from .env
+    // Register JWT — reads secret and expiry from .env.
+    // @nestjs/jwt v11 requires StringValue (ms branded type) for expiresIn.
+    // config.get returns plain string — narrowed via template-literal assertion,
+    // which is a safe compile-time cast because we control the .env values.
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET'),
+        secret: config.get<string>('JWT_SECRET')!,
         signOptions: {
-          expiresIn: config.get<string>('JWT_EXPIRES_IN', '7d'),
+          expiresIn: config.get('JWT_EXPIRES_IN', '7d'),
         },
       }),
     }),
