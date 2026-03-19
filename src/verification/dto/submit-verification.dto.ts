@@ -6,5 +6,5 @@ export class SubmitVerificationDto {
   @IsString()
   @IsNotEmpty({ message: 'Liveness session ID is required' })
   @IsUUID('4', { message: 'Invalid liveness session ID format' })
-  livenessSessionId: string | undefined;
+  livenessSessionId!: string;
 }
