@@ -8,17 +8,17 @@ import {
 
 export class RegisterDto {
   @IsEmail({}, { message: 'Please provide a valid email address' })
-  email: string | undefined;
+  email!: string;
 
   @IsString()
   @MinLength(2, { message: 'First name must be at least 2 characters' })
   @MaxLength(50)
-  firstName: string | undefined;
+  firstName!: string;
 
   @IsString()
   @MinLength(2, { message: 'Last name must be at least 2 characters' })
   @MaxLength(50)
-  lastName: string | undefined;
+  lastName!: string;
 
   @IsString()
   @MinLength(8, { message: 'Password must be at least 8 characters' })
@@ -28,5 +28,5 @@ export class RegisterDto {
     message:
       'Password must contain uppercase, lowercase, number and special character',
   })
-  password: string | undefined;
+  password!: string;
 }
