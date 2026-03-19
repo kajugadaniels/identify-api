@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as helmet from 'helmet';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
@@ -34,9 +34,9 @@ async function bootstrap() {
   // using class-validator decorators on DTOs
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,       // strips unknown fields from body
+      whitelist: true, // strips unknown fields from body
       forbidNonWhitelisted: true, // throws error if unknown fields sent
-      transform: true,       // auto-converts types (string → number etc.)
+      transform: true, // auto-converts types (string → number etc.)
     }),
   );
 

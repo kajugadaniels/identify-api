@@ -41,10 +41,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       method: request.method,
       // If message is an object (e.g. from ValidationPipe), spread it
       // Otherwise wrap it in a message field
-      error:
-        typeof message === 'object'
-          ? message
-          : { message },
+      error: typeof message === 'object' ? message : { message },
     };
 
     // Log server errors (5xx) with full stack trace

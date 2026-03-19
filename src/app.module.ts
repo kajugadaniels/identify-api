@@ -35,7 +35,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
         type: 'postgres',
         url: config.get<string>('DATABASE_URL'),
         ssl: { rejectUnauthorized: false }, // required for Neon
-        autoLoadEntities: true,  // auto-picks up all @Entity() classes
+        autoLoadEntities: true, // auto-picks up all @Entity() classes
         synchronize: process.env.NODE_ENV !== 'production', // never true in prod
       }),
     }),
