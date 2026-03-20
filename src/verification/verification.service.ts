@@ -142,6 +142,20 @@ export class VerificationService {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         const detail = error.response?.data?.detail;
 
+        // No response = engine unreachable (wrong URL, engine down, timeout)
+        if (!error.response) {
+          this.logger.error(
+            `Engine unreachable — code: ${error.code}, url: ${this.config.get('FASTAPI_ENGINE_URL')}/api/v1/verify, message: ${error.message}`,
+          );
+          throw new InternalServerErrorException(
+            'Verification engine is unreachable. Please try again later.',
+          );
+        }
+
+        this.logger.error(
+          `Engine responded with ${status}: ${JSON.stringify(error.response.data)}`,
+        );
+
         // 422 means bad images — pass the message back to the user
         if (status === 422) {
           throw new BadRequestException(

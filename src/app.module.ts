@@ -8,7 +8,10 @@ import { VerificationModule } from './verification/verification.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: process.env.NODE_ENV === 'production' ? '.env.production' : '.env',
+    }),
 
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
